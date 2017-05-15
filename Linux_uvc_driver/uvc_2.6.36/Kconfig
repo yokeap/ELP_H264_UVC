@@ -1,0 +1,6 @@
+config USB_VIDEO_CLASS_H264
+	tristate "USB Video Class (UVC)"
+	---help---
+	  Support for the RERVISION H264 USB Video Class (UVC).  Currently only H264 USB Camera,
+	  such as RER-USB100W04H, are supported.
+
