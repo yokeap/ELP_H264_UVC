@@ -5,7 +5,8 @@
  *      it under the terms of the GNU General Public License as published by
  *      the Free Software Foundation; either version 2 of the License, or
  *      (at your option) any later version.
- *
+ *	
+ #S.Sukprasertchai note: to make with kernel 3.8 upper user must edit the CheckKernelVersion function to force return true 
  */
 
 #include <stdio.h>
