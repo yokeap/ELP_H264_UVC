@@ -43,10 +43,18 @@
 /* -----------------------------------------------------------------------------
 * adding by pae
 */
+
+static inline struct uvc_streaming *
+uvc_queue_to_stream(struct uvc_video_queue *queue)
+{
+	return container_of(queue, struct uvc_streaming, queue);
+}
+
 static inline struct uvc_buffer *uvc_vbuf_to_buffer(struct vb2_v4l2_buffer *buf)
 {
 	return container_of(buf, struct uvc_buffer, buf);
 }
+/******************************************************************************/
 
 static int uvc_queue_setup(struct vb2_queue *vq, const struct v4l2_format *fmt,
 			   unsigned int *nbuffers, unsigned int *nplanes,
