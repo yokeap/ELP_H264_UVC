@@ -13,7 +13,9 @@
 #include <linux/videodev2.h>
 #include <media/media-device.h>
 #include <media/v4l2-device.h>
-#include <media/videobuf2-core.h>
+#include <media/v4l2-event.h>
+#include <media/v4l2-fh.h>
+#include <media/videobuf2-v4l2.h>
 
 typedef enum{
 	CHIP_NONE = -1,
@@ -333,10 +335,10 @@ enum uvc_buffer_state {
 	UVC_BUF_STATE_ERROR	= 5,
 };
 
+//added by Pae
 struct uvc_buffer {
-	struct vb2_buffer buf;
+	struct vb2_v4l2_buffer buf;
 	struct list_head queue;
-
 	enum uvc_buffer_state state;
 	unsigned int error;
 
