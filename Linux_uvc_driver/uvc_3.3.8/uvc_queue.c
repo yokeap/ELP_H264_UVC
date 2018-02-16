@@ -162,7 +162,7 @@ static int uvc_buffer_finish(struct vb2_buffer *vb)
 	uvc_video_clock_update(stream, &vb->v4l2_buf, buf);
 	return 0;
 }
-*/
+
 
 //adding by Pae
 static void uvc_buffer_finish(struct vb2_buffer *vb)
@@ -174,6 +174,19 @@ static void uvc_buffer_finish(struct vb2_buffer *vb)
 
 	if (vb->state == VB2_BUF_STATE_DONE)
 		uvc_video_clock_update(stream, vbuf, buf);
+}
+*/
+//modify by Pae
+static int uvc_buffer_finish(struct vb2_buffer *vb)
+{
+	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
+	struct uvc_video_queue *queue = vb2_get_drv_priv(vb->vb2_queue);
+	struct uvc_streaming *stream =
+			container_of(queue, struct uvc_streaming, queue);
+	struct uvc_buffer *buf = container_of(vb, struct uvc_buffer, buf);
+
+	uvc_video_clock_update(stream, vbuf, buf);
+	return 0;
 }
 
 static struct vb2_ops uvc_queue_qops = {
