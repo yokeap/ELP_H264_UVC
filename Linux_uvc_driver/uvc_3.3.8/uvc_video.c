@@ -948,9 +948,11 @@ static void uvc_video_stats_stop(struct uvc_streaming *stream)
  * to be called with a NULL buf parameter. uvc_video_decode_data and
  * uvc_video_decode_end will never be called with a NULL buffer.
  */
+
+//fixed by Pae
 static int uvc_video_decode_start(struct uvc_streaming *stream,
 		struct uvc_buffer *buf, const __u8 *data, int len)
-{
+{	
 	__u8 fid;
 
 	/* Sanity checks:
@@ -1017,9 +1019,10 @@ static int uvc_video_decode_start(struct uvc_streaming *stream,
 		else
 			ktime_get_real_ts(&ts);
 
-		buf->buf.v4l2_buf.sequence = stream->sequence;
-		buf->buf.v4l2_buf.timestamp.tv_sec = ts.tv_sec;
-		buf->buf.v4l2_buf.timestamp.tv_usec =
+		buf->buf.field = V4L2_FIELD_NONE;
+		buf->buf.sequence = stream->sequence;
+		buf->buf.timestamp.tv_sec = ts.tv_sec;
+		buf->buf.timestamp.tv_usec =
 			ts.tv_nsec / NSEC_PER_USEC;
 
 		/* TODO: Handle PTS and SCR. */
@@ -1192,7 +1195,9 @@ static void uvc_video_decode_isoc(struct urb *urb, struct uvc_streaming *stream,
 				mem = buf->mem+4;
 				h264_decode_seq_parameter_set(mem, buf->bytesused, &width, &height);
 				//printk("[w,h]=[%d,%d](%d)\n", width, height,  buf->bytesused);
-				buf->buf.v4l2_buf.reserved = ((width & 0xFFFF) << 16) | (height & 0xFFFF);
+				//buf->buf.v4l2_buf.reserved = ((width & 0xFFFF) << 16) | (height & 0xFFFF);
+				//adding by Pae
+				//buf->buf.vb2_buf.reserved = ((width & 0xFFFF) << 16) | (height & 0xFFFF);
 			}
 #ifdef PATCH_OF_RER9420_MJPG_EOF_LOST 
 			if(stream->dev->RER_Chip == CHIP_RER9420 && 
@@ -1258,7 +1263,9 @@ static void uvc_video_decode_isoc(struct urb *urb, struct uvc_streaming *stream,
 				// Get JPEG Width and Height
 				width = (*(mem+9)<<8)|(*(mem+10));
 				height = (*(mem+7)<<8)|(*(mem+8));
-				buf->buf.v4l2_buf.reserved = ((width & 0xFFFF) << 16) | (height & 0xFFFF);
+				//buf->buf.v4l2_buf.reserved = ((width & 0xFFFF) << 16) | (height & 0xFFFF);
+				//adding by Pae
+				//buf->buf.reserved = ((width & 0xFFFF) << 16) | (height & 0xFFFF);
 
 				if(framesize>0)
 				{
@@ -1299,7 +1306,9 @@ static void uvc_video_decode_isoc(struct urb *urb, struct uvc_streaming *stream,
 			
 				#define MJPG_EOF_9422_REMOVE_MAX_LEN 10
 				if(buf->bytesused<MJPG_EOF_9422_REMOVE_MAX_LEN)
-					buf->buf.v4l2_buf.reserved |= 0x80000000;
+					//buf->buf.v4l2_buf.reserved |= 0x80000000;
+					//adding by Pae
+					//buf->buf.vb2_buf.reserved |= 0x80000000;
 				else
 				{
 					mem = buf->mem + buf->bytesused - 2 ;
@@ -1313,7 +1322,9 @@ static void uvc_video_decode_isoc(struct urb *urb, struct uvc_streaming *stream,
 						 buf->bytesused = framesize;
 					mem = buf->mem;
 					if(mem[0]!=0xFF || mem[1]!=0xD8 || mem[buf->bytesused-2]!=0xFF || mem[buf->bytesused-1]!=0xD9)
-						buf->buf.v4l2_buf.reserved |= 0x80000000;
+						//buf->buf.v4l2_buf.reserved |= 0x80000000;
+						//adding by Pae
+						//buf->buf.reserved |= 0x80000000;
 				}
 			
 				
@@ -1422,7 +1433,9 @@ static void uvc_video_encode_bulk(struct urb *urb, struct uvc_streaming *stream,
 		if (buf->bytesused == stream->queue.buf_used) {
 			stream->queue.buf_used = 0;
 			buf->state = UVC_BUF_STATE_READY;
-			buf->buf.v4l2_buf.sequence = ++stream->sequence;
+			//buf->buf.v4l2_buf.sequence = ++stream->sequence;
+			//adding by Pae 
+			buf->buf.sequence = ++stream->sequence;
 			uvc_queue_next_buffer(&stream->queue, buf);
 			stream->last_fid ^= UVC_STREAM_FID;
 		}
